@@ -604,9 +604,9 @@
 				width: 99.99999%;
 			}
 
-			.gallery .group .span-3-25 {
+			/* .gallery .group .span-3-25 {
 				width: 108.33332%;
-			}
+			} */
 
 
 			.gallery .group .span-3-75 {
@@ -894,9 +894,10 @@
 				width: 100%;
 			}
 
-			.panel .span-3-25 {
+			/* .panel .span-3-25 {
 				width: 100%;
-			}
+				height: auto;
+			} */
 
 			.panel .span-3-75 {
 				width: 100%;
@@ -1302,4 +1303,27 @@
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
+}
+
+iframe {
+    width: 100%;  /* 充满容器的宽度 */
+    height: 100%; /* 根据父容器调整高度 */
+    border: 0;    /* 去除边框 */
+    display: block; /* 避免任何额外的空间 */
+}
+
+.span-3-25 {
+    position: relative;
+    width: 100%; /* 宽度充满父容器 */
+    height: 0;
+    padding-bottom: 75%; /* 1024x768比例的4:3 */
+    overflow: hidden; /* 防止内容溢出 */
+}
+
+.span-3-25 iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
 }

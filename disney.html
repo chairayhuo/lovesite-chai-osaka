@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <title>Disney Firework with Love</title>
+        <style>
+            html, body {
+                margin: 0;
+                padding: 0;
+                width: 100%;
+                height: 100%;
+                overflow: hidden; /* 防止页面出现滚动条 */
+            }
+        </style>
+        <script type="module">
+            import zim from "https://zimjs.org/cdn/015/zim_game";
+            const assets = ["castle.png","boy.png","girl.png","background.png","moon.png","photo.JPG","https://fonts.googleapis.com/css2?family=Kanit","My-Jinji.m4a","Firework-Whistles.mp3"];
+            const path = "assets/";
+            new Frame(FIT, 1024, 768, dark, darker, ready, assets, path);
+            function ready() {
+                // Given F, S, W, H or frame, stage, stageW, stageH
+
+                S.on("stagemousedown", ()=>{              
+                    new Aud("My-Jinji.m4a").play({volume:2, loop:true});    
+                }, null, true);
+                
+                const background = new Pic("background.png").sca(0.9).alp(1).center();
+                const block = new Rectangle(W,H,black).alp(0).addTo();
+                const moon = new Pic("moon.png").sca(0.295).alp(0).loc(138,-170);
+                const castle = new Pic("castle.png").sca(0.6).loc(-220,50);
+                const boy = new Pic("boy.png").sca(0.35).loc(600,0);
+                const girl = new Pic("girl.png").sca(0.28).loc(430,150);
+
+                const darkenSky = new Label({
+                    text:"darken the sky ----->",
+                    size:24,
+                    color:white,
+                    outlineColor:black,
+                    font:"Kanit",
+                }).rot(90).loc(80,130);
+
+                const star = new Emoji("\u2b50\ufe0f")
+                .sca(1.5)
+                .animate({
+                    props:{rotation:"360"},
+                    time:3,
+                    loop:true,
+                    ease:"linear"
+                }).centerReg().loc(52,50);
+
+                const startFirework = new Button({
+                    width:240,
+                    height:30,
+                    backgroundColor:yellow,
+                    label:new Label({
+                    text:"light the firework",
+                    size:24,
+                    font:"Kanit"
+                    })
+                }).loc(80,715).alp(0);
+
+                const changelight = new Slider({
+                    min:0,
+                    max:0.7,
+                    vertical:true,
+                    barLength:600,
+                    barWidth:5,
+                    button:"pill",
+                    barColor:white,
+                    accentSize:2,
+                    accentColor:black,
+                })
+                .loc(50,100)
+                // .rot(180)
+                .change(()=>{
+                    zog(changelight.currentValue);
+                    block.alp(changelight.currentValue);
+                    moon.alp(changelight.currentValue*1.4);
+
+                    if (changelight.currentValue < 0.1) {
+                        startFirework.alp(1);
+                    }else{
+                        startFirework.alp(0);
+                    };
+                    S.update;                    
+                });
+
+                startFirework.on("click",()=>{
+                    changelight.removeFrom();
+                    darkenSky.removeFrom();
+                    star.removeFrom();
+                    startFirework.removeFrom();                    
+
+                    block.ord(2).alp(0.5);
+
+                    boy.animate({
+                        props:{
+                        scale:0.25,
+                        x:600,
+                        y:220
+                        },
+                        ease:"linear",
+                        time:1.5,
+                        // call:()=>{
+                        //     boy.effect(new GlowEffect({
+                        //         color:white,
+                        //         blurX:50,
+                        //         blurY:50,
+                        //         strength:2,
+                        //         quality:2
+                        //         })
+                        //     )
+                        // }
+                    })
+
+                    girl.animate({
+                        props:{
+                        scale:0.2,
+                        x:480,
+                        y:330
+                        },
+                        ease:"linear",
+                        time:1.5,
+                        // call:()=>{
+                        //     girl.effect(new GlowEffect({
+                        //         color:white,
+                        //         blurX:50,
+                        //         blurY:50,
+                        //         strength:2,
+                        //         quality:5
+                        //         })
+                        //     )
+                        // }
+                    });
+                    
+                    
+                    const parallax = new Parallax([
+                        {obj:castle,prop:"x",propChange:50},
+                        {obj:boy,prop:"x",propChange:100},
+                        {obj:girl,prop:"x",propChange:150},
+                    ]);
+                    S.update;
+
+                    castle.animate({
+                        props:{
+                        scale:0.78,
+                        x:-200,
+                        y:-65,
+                        },
+                        ease:"linear",
+                        time:1.5,
+                        call:()=>{
+                            const shoot = new Emitter({
+                                obj:new Circle(2),
+                                random:{color:[blue.lighten(.5), green.lighten(.5), pink.lighten(.5), yellow.lighten(.5), orange.lighten(.5)]},
+                                trace:true,
+		                        traceFadeTime:0.8,
+		                        width:W,
+		                        height:H,
+		                        traceShiftY:-H/2,
+                                events:true,
+                                angle:{min:-90-15,max:-90+15},
+                                interval:{min:3, max:5},
+                                life:2,
+		                        decayStart:1.2,
+		                        decayTime:0.05,
+                                wait:3,
+                                force:{min:9,max:11},
+                                }).centerReg().mov(-200,300);
+
+                                const shoot2 = new Emitter({
+                                    obj:new Circle(2),
+                                    random:{color:[blue.lighten(.5), green.lighten(.5), pink.lighten(.5), yellow.lighten(.5), orange.lighten(.5)]},
+                                    trace:true,
+		                            traceFadeTime:0.8,
+		                            width:W,
+		                            height:H,
+		                            traceShiftY:-H/2,
+                                    events:true,
+                                    angle:{min:-90-15,max:-90+15},
+                                    interval:{min:3, max:5},
+                                    life:2,
+		                            decayStart:1.2,
+		                            decayTime:0.05,
+                                    wait:3,
+                                    force:{min:9,max:11},
+                                }).centerReg().mov(-200,300);
+
+                                shoot.on("emitted", fireSounds);
+                                shoot2.on("emitted", fireSounds);
+
+                                function fireSounds() {
+                                    new Aud("Firework-Whistles.mp3",2).play();
+	                            }
+
+                                shoot.on("decayed", explode);
+                                shoot2.on("decayed", explode); 
+                                // const shoot2 = shoot.clone().centerReg().mov(0,300);            	                	            
+
+                                function explode(e){
+                                    const explosion = e.target.explosion;
+                                    explosion.addTo(); 
+                                    const point = shoot.localToGlobal(e.particle.x, e.particle.y);
+		                            explosion.loc(point.x+200, point.y-300);
+                                    // zog(e.particle.x);
+                                    // zog(point.x);
+                                    explosion.num = zik([2,3,2,3,6]);
+                                    explosion.random = zik([
+			                        {color:[blue.lighten(.5), green.lighten(.5), pink.lighten(.5), yellow.lighten(.5), orange.lighten(.5)]},
+                                    {color:[blue.lighten(.5), green.lighten(.5), pink.lighten(.5), yellow.lighten(.5)]},
+                                    {color:[blue.lighten(.5), pink.lighten(.5), yellow.lighten(.5)]},
+                                    {color:[blue.lighten(.5), green.lighten(.5), pink.lighten(.5), orange.lighten(.5)]},
+			                        {color:[blue.lighten(.5), pink.lighten(.5)]},
+			                        {color:[yellow.lighten(.5), orange.lighten(.5)]},
+			                        {color:[blue.lighten(.5), green.lighten(.5)]},
+			                        {color:[white,blue.lighten(.5)]},
+			                        {color:[blue.lighten(.5), pink.lighten(.5), yellow.lighten(.5)]},
+		                            ]);
+                                    explosion.obj = zik([
+			                            new Circle(2,pink),
+			                            {type:"shape", s:explosion.random.color, ss:2.5}
+		                            ]);
+                                    explosion.spurt(50);                   
+                                };
+
+                                const explosion = new Emitter({
+                                    obj:new Circle(3).alp(1),
+                                    trace:true,
+                                    // pool:false,
+		                            interval:0.02,
+		                            life:1.4,
+		                            decayTime:0.5,
+		                            decayStart:0.5,
+		                            gravity:5,
+                                    force:{min:2,max:4},
+		                            startPaused:true,
+		                            width:W,
+		                            height:H,
+		                            // traceShiftY:170,
+                                    // cache:false,
+                                }).centerReg();
+                                shoot.explosion = explosion;
+
+                                const explosion2 = new Emitter({
+                                    obj:new Circle(3).alp(1),
+                                    trace:true,
+                                    // pool:false,
+		                            interval:0.02,
+		                            life:1.4,
+		                            decayTime:0.5,
+		                            decayStart:0.5,
+		                            gravity:5,
+                                    force:{min:2,max:4},
+		                            startPaused:true,
+		                            width:W,
+		                            height:H,
+		                            // traceShiftY:170,
+                                    // cache:false,
+                                    wait:3
+                                }).centerReg();
+	                            shoot2.explosion = explosion2;
+
+                                S.update();
+
+                                const bonus = new Emoji("\ud83c\udf18")
+                                .pos(10,10,RIGHT,BOTTOM)
+                                .on("click",()=>{
+                                    const photo = new Pic("photo.JPG").sca(0.35).pos(10,10,RIGHT,BOTTOM);
+                                    photo.on("click",()=>{
+                                        photo.removeFrom()
+                                    })                    
+                            });
+                        }
+                    })                                                                                                    
+                })    
+            } // end ready
+        </script>
+        <meta name="viewport" content="width=device-width, user-scalable=no" />
+        <link rel="apple-touch-icon" sizes="180x180" href="assets/favicon/apple-touch-icon.png">
+        <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon/favicon-32x32.png">
+        <link rel="icon" type="image/png" sizes="16x16" href="assets/favicon/favicon-16x16.png">
+        <link rel="manifest" href="/site.webmanifest">
+    </head>
+    <body></body>
+</html>
